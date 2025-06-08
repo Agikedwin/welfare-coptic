@@ -6,9 +6,13 @@ WORKDIR /app
  
 # Copy package.json and package-lock.json
 COPY package*.json ./
+
  
 # Install dependencies
 RUN npm install
+
+#Install firebase 
+RUN npm install firebase
  
 # Copy the rest of your application files
 COPY . .

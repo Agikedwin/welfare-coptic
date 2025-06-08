@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+
+  devops-app:
+    image: edvinag73/coptic-welfare:latest
+    mem_reservation: 700m
+    ports:
+      - 3005:3005
+
+
