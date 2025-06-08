@@ -1,0 +1,6 @@
+/* ExpenditureForm.css */
+.expenditure-form-wrapper {
+  height: 100vh; /* Ensure it fills viewport or dashboard area */
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
