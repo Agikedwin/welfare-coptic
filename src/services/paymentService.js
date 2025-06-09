@@ -80,3 +80,20 @@ export const fetchOutstandingArrears = async (userId) => {
     return 0;
   }
 };
+
+export const checkIfEntryExists = async (userId, month, year) => {
+  const q = query(paymentCollection, // Replace with your collection name
+    where("user_id", "==", userId),
+    where("month", "==", month),
+    where("year", "==", year)
+  );
+
+  try {
+    const querySnapshot = await getDocs(q);
+    console.log('Check payment exists:: ',!querySnapshot.empty )
+    return !querySnapshot.empty; // true if exists
+  } catch (error) {
+    console.error("Error checking Firestore:", error);
+    return true;
+  }
+};

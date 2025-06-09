@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { signInAndInitializeUser } from '../services/UserService';
+import { ToastContainer, toast } from 'react-toastify';
+
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -17,10 +19,19 @@ function LoginPage() {
     
     try {
       console.log("AT LOGIN ::::",email,password)
-      await signInAndInitializeUser( email, password);
+      await signInAndInitializeUser( email, password).then(result =>{
+        console.log('The result ::: ', result.error)
+        if(result.error){
+           toast.warning('Invalid credentials. Please try again.' )
+
+        }
+
+      });
       navigate('/'); // redirect after login
     } catch (err) {
-      setError('Invalid credentials. Please try again.');
+      //setError('Invalid credentials. Please try again.');
+      console.log('LOGIN ERRRO')
+     
     }
   };
 
@@ -57,6 +68,8 @@ function LoginPage() {
               Sign Up
             </Button>
           </Form>
+
+          <ToastContainer position="top-right" autoClose={4000} />
         </Card.Body>
       </Card>
     </div>

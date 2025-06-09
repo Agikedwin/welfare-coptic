@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Form, Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+
 
 import { auth } from '../firebase';
 import { signInAndInitializeUser, signUpCreateUserWithEmailAndPassword } from '../services/UserService'; 
@@ -20,9 +22,15 @@ function SignupPage() {
     console.log(email)
     console.log(password)
     try {
+      if(password !==confirmPwd){
+        toast.warning(`Passwords do not match, please type again  ` )
+        return
+      }
       await signUpCreateUserWithEmailAndPassword(email, password,fullName,phoneNumber,confirmPwd);
+      toast.success('✅ Sign up successfull');
       navigate('/login'); // redirect after signup
     } catch (err) {
+      toast.warning(err.message )
       setError(err.message);
     }
   };
@@ -72,7 +80,7 @@ function SignupPage() {
                 />
             </Form.Group>
 
-            <Form.Group controlId="formPassword" className="mb-3">
+            {/* <Form.Group controlId="formPassword" className="mb-3">
               <Form.Label>Password</Form.Label>
               <Form.Control
                type="password" 
@@ -85,12 +93,12 @@ function SignupPage() {
             <Form.Group controlId="confirmPassword" className="mb-3">
               <Form.Label>Confirm Password</Form.Label>
               <Form.Control
-               type="confirmPassword" 
+               type="password" 
                placeholder="Password" 
                required 
                 onChange={(e) => setConfirmPwd(e.target.value)}
                />
-            </Form.Group>
+            </Form.Group> */}
 
             <Button variant="success" type="submit" className="w-100 mb-2">
               Sign Up
@@ -100,6 +108,7 @@ function SignupPage() {
               Back to Login
             </Button>
           </Form>
+          <ToastContainer position="top-right" autoClose={4000} />
         </Card.Body>
       </Card>
     </div>

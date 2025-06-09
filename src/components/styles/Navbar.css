@@ -2,3 +2,10 @@
   background-color: #aaadb1; /* Bootstrap’s dark is #212529; this is lighter */
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+
+
+.custom-dark-navbar .btn-outline-light:hover {
+  background-color: #f8f9fa;
+  color: #212529;
+}

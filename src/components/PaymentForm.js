@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import './styles/PaymentForm.css';
-import { savePayment } from '../services/paymentService';
+import { savePayment, checkIfEntryExists } from '../services/paymentService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
@@ -21,7 +21,7 @@ const PaymentForm = () => {
     paymentType: 'Monthly',
     month: '',
     year: '',
-    amount: '',
+    amount: 200,
     transactionId: '',
     remarks: '',
     status: 'Pending',
@@ -66,17 +66,35 @@ const PaymentForm = () => {
     }
    
     try {
-      await savePayment(formData);
+      const [dataExists] = await Promise.all([
+                              checkIfEntryExists(formData.user_id,formData.month, formData.year)
+                          ]);
+                          
+      console.log("PAYMENT STATE :::",dataExists )
+
+      if(dataExists){
+        toast.warning(`You have already paid your monthly contribution for  ${formData.month} ${formData.year}. Thank you   ` )
+        return
+
+      }else{
+        await savePayment(formData);
       toast.success('✅ Payment saved successfully!');
       setFormData({
-        user_id: '',
+        user_id: formData.user_id,
         paymentType: 'Monthly',
         month: months[0],
         year: new Date().getFullYear(),
-        amount: '',
+        amount: 200,
         transactionId: '',
-        remarks: ''
+        remarks: '',
+        status: 'Pending',
+        email: formData.email,
+        createdAt: new Date()
       });
+        
+      }    
+
+      
     } catch (error) {
       toast.error('❌ Error saving payment: ' + error.message);
     }
@@ -116,8 +134,8 @@ const PaymentForm = () => {
           </select>
         </label>
 
-        {formData.paymentType === 'Monthly' && (
-          <>
+        {/* {formData.paymentType === 'Monthly' && (
+          <> */}
             <label>
               Month:
               <select name="month" value={formData.month} onChange={handleChange} required>
@@ -135,8 +153,8 @@ const PaymentForm = () => {
                 ))}
               </select>
             </label>
-          </>
-        )}
+         {/*  </>
+        )} */}
 
         <label>
           Amount (Max 200):
@@ -148,6 +166,7 @@ const PaymentForm = () => {
             required
             max="200"
             min="200"
+            disabled
           />
         </label>
 
@@ -163,7 +182,7 @@ const PaymentForm = () => {
 
         <button type="submit">Submit</button>
       </form>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={5000} />
     </div>
   );
 };

@@ -1,5 +1,7 @@
 // src/services/userService.js
 import {db} from '../firebase'
+import { signOut } from "firebase/auth";
+
 import {
   collection,
   query,
@@ -81,7 +83,7 @@ export const signInAndInitializeUser = async (email, password) => {
   } catch (error) {
     console.error("Authentication or Firestore error:", error);
     //throw error;
-    return error
+    return {'error': true}
   }
 };
 
@@ -89,7 +91,7 @@ export const signInAndInitializeUser = async (email, password) => {
 export const signUpCreateUserWithEmailAndPassword = async (email, password,full_name,phone_number,) => {
   try {
     console.log("AT SIG UP ::::",email,password)
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(auth, email, email);
     const firebaseUser = userCredential.user;
 
     console.log('FIRESTORE ---- ',firebaseUser)
@@ -177,4 +179,13 @@ export const updateUser = async (docId, updates) => {
 export const saveUserArrears = async (data) => {
   const docRef = await addDoc(arrearsCollection, data);
   return docRef;
+};
+
+export const logout = async () => {
+  try {
+    await signOut(auth);
+    console.log("User signed out");
+  } catch (error) {
+    console.error("Error signing out:", error);
+  }
 };
