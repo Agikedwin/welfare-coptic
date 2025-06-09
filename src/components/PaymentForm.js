@@ -4,6 +4,8 @@ import { savePayment } from '../services/paymentService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+
 
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -13,6 +15,7 @@ const months = [
 const years = Array.from({ length: 7 }, (_, i) => new Date().getFullYear() - 5 + i);
 
 const PaymentForm = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     user_id: '',
     paymentType: 'Monthly',
@@ -39,14 +42,20 @@ const PaymentForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+     if ( formData.user_id === '') {
+      toast.warn('User Id required, please login first');
+       navigate('/login');
+
+      return;
+    }
     if(formData.year ==='' && formData.paymentType !=='Arrears'){
-     return toast.error('Please select year ' );
+     return toast.error('Please select year');
     }
     if(formData.year ==='' && formData.paymentType !=='Monthly'){
      return toast.error('Please select year ' );
     }
     if(formData.paymentType ===''){
-     return toast.error('Please select payment type ' );
+     return toast.error('Please select payment type' );
     }
     if(formData.month ==='' && formData.paymentType !=='Arrears'){
      return toast.error('Please select month ' );
@@ -55,6 +64,7 @@ const PaymentForm = () => {
       toast.warn('Amount must be 200');
       return;
     }
+   
     try {
       await savePayment(formData);
       toast.success('✅ Payment saved successfully!');
@@ -94,7 +104,7 @@ const PaymentForm = () => {
       <form onSubmit={handleSubmit} className="payment-form">
         <label>
           User ID:
-          <input type="text" name="user_id" value={formData.user_id} onChange={handleChange}  readOnly
+          <input type="text" name="user_id" value={formData.user_id} onChange={handleChange}   readOnly
     disabled required />
         </label>
 

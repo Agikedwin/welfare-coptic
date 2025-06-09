@@ -57,8 +57,9 @@ export const fetchPaymentTotalsByType = async () => {
     Arrears: 0,
   };
 
-  payments.forEach(({ paymentType, amount }) => {
+  payments.forEach(({ paymentType, amount,status }) => {
     if (
+      status === 'Verified' &&
       
       (paymentType === 'Monthly' || paymentType === 'Arrears')
     ) {
