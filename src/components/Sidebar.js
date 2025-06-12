@@ -104,7 +104,7 @@ function Sidebar() {
           <Nav.Item>
             <Nav.Link
                 as={Link}
-                to="/"
+                to="/home"
                 className={`px-1 py-2 ${location.pathname === '/add-user' ? 'active' : ''}`}
                 >
                <i className="bi bi-house"></i>
@@ -131,7 +131,18 @@ function Sidebar() {
               className={`px-1 py-2 ${location.pathname === '/payment' ? 'active' : ''}`}
             >
               <i className="bi bi-credit-card"></i>
-              {!collapsed && <span className="ms-1">Payment</span>}
+              {!collapsed && <span className="ms-1">Pay</span>}
+            </Nav.Link>
+          </Nav.Item>
+
+           <Nav.Item>            
+            <Nav.Link
+              as={Link}
+              to="/payments-pending"
+              className={`px-1 py-2 ${location.pathname === '/payments-pending' ? 'active' : ''}`}
+            >
+              <i className="bi bi-bell"></i>
+              {!collapsed && <span className="ms-1">Unverified</span>}
             </Nav.Link>
           </Nav.Item>
 

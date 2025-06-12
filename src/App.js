@@ -12,10 +12,11 @@ import PaymentHistory from './components/PaymentHistory';
 import MainDashboardCards from './components/MainDashboardCards'
 import ExpenditureForm from './components/ExpenditureForm';
 import ExpenditureView from './components/ExpenditureView';
+import PendingVerification from './components/PendingVerification';
 
 function LayoutWrapper({ children }) {
   const location = useLocation();
-  const publicRoutes = ['/login', '/signup'];
+  const publicRoutes = ['/', '/signup'];
   const isAuthPage = publicRoutes.includes(location.pathname);
 
   return isAuthPage ? (
@@ -38,15 +39,16 @@ function App() {
     <Router>
       <LayoutWrapper>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/" element={<MainDashboardCards/>} />
+          <Route path="/home" element={<MainDashboardCards/>} />
           <Route path="/add-user" element={<AddUserPage />} />
           <Route path="/view-users" element={<ViewUsersPage />} />
            <Route path="/payment" element={<PaymentForm />} />
            <Route path="/payment-history/:userId" element={<PaymentHistory />} />
            <Route path="/expenses" element={<ExpenditureForm/>} />
            <Route path="/expenses-view" element={<ExpenditureView/>} />
+           <Route path="/payments-pending" element={<PendingVerification/>} />
         </Routes>
       </LayoutWrapper>
     </Router>

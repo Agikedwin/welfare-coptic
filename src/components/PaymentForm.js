@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import './styles/PaymentForm.css';
-import { savePayment, checkIfEntryExists } from '../services/paymentService';
+import { savePayment, checkIfEntryExists,updateAllPayments } from '../services/paymentService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
@@ -16,6 +16,7 @@ const years = Array.from({ length: 7 }, (_, i) => new Date().getFullYear() - 5 +
 
 const PaymentForm = () => {
   const navigate = useNavigate();
+  const [monthIndex, setMonthIndex] = useState(0)
   const [formData, setFormData] = useState({
     user_id: '',
     paymentType: 'Monthly',
@@ -26,42 +27,61 @@ const PaymentForm = () => {
     remarks: '',
     status: 'Pending',
     email: '',
+    monthNumber: '',
+    latePaymentFine:'',
+    datePaid: Date(),
+    isNew: 1,
     createdAt: new Date()
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
+    
     
 
     setFormData((prev) => ({
       ...prev,
       [name]: value
+      
     }));
+
+    console.log('Selected month:', formData);
+    
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    formData.monthNumber = months.indexOf(formData.month)+1
+    
      if ( formData.user_id === '') {
       toast.warn('User Id required, please login first');
-       navigate('/login');
+       navigate('/');
 
       return;
     }
-    if(formData.year ==='' && formData.paymentType !=='Arrears'){
+    if(formData.year ==='' ){
      return toast.error('Please select year');
     }
-    if(formData.year ==='' && formData.paymentType !=='Monthly'){
+    if(formData.year ==='' ){
      return toast.error('Please select year ' );
     }
     if(formData.paymentType ===''){
      return toast.error('Please select payment type' );
     }
-    if(formData.month ==='' && formData.paymentType !=='Arrears'){
+    if(formData.month ==='' ){
      return toast.error('Please select month ' );
     }
-    if ( Number(formData.amount) != 200) {
-      toast.warn('Amount must be 200');
+    if ( Number(formData.amount) != 200 && formData.paymentType ==='Monthly') {
+      toast.warn('Monthly contribution is Ksh. 200 , input 200');
+      return;
+    }
+    if ( Number(formData.amount) !== 50 && formData.paymentType ==='Penalty') {
+      toast.warn('Penalty Amount must be 50');
+      return;
+    }
+    if (formData.datePaid ==='') {
+      toast.warn('Provide the date amount sent to treasurer');
       return;
     }
    
@@ -84,11 +104,15 @@ const PaymentForm = () => {
         paymentType: 'Monthly',
         month: months[0],
         year: new Date().getFullYear(),
-        amount: 200,
+        amount: 0,
         transactionId: '',
         remarks: '',
         status: 'Pending',
         email: formData.email,
+        latePaymentFine:'',
+        onthNumber: '',
+        datePaid: Date(),
+        isNew: 1,
         createdAt: new Date()
       });
         
@@ -101,6 +125,8 @@ const PaymentForm = () => {
   };
 
     useEffect(() => {
+     
+      
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
         console.log("User ::::",user)
@@ -131,6 +157,7 @@ const PaymentForm = () => {
           <select name="paymentType" value={formData.paymentType} onChange={handleChange} required>
             <option value="Monthly">Monthly</option>
             <option value="Arrears">Arrears</option>
+            <option value="Penalty">Penalty</option>
           </select>
         </label>
 
@@ -165,8 +192,8 @@ const PaymentForm = () => {
             onChange={handleChange}
             required
             max="200"
-            min="200"
-            disabled
+            min="50"
+            
           />
         </label>
 
@@ -174,6 +201,18 @@ const PaymentForm = () => {
           Transaction ID:
           <input type="text" name="transactionId" value={formData.transactionId} onChange={handleChange} required />
         </label>
+
+        <label>
+            Date the amount sent to treasurer:
+            <input
+              type="date"
+              name="datePaid"
+              value={formData.datePaid?.slice(0, 10)} // Format as YYYY-MM-DD
+              max={new Date().toISOString().split('T')[0]} // Prevent future dates
+              onChange={handleChange}
+              required
+            />
+          </label>
 
         <label>
           Remarks:

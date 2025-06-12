@@ -26,6 +26,19 @@ export const fetchPayments = async (userId) => {
   const snapshot = await getDocs(q);
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
+
+
+export const fetchPaymentsPending = async () => {
+  let q = paymentCollection;
+
+
+    q = query(paymentCollection, where('status', '==', 'Pending'));
+  
+
+  const snapshot = await getDocs(q);
+  console.log('PENDING :::::::::',snapshot)
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
 export const fetchPaymentTotalsByType = async (userId) => {
    // const user = await getCurrentUser();
   const payments = await fetchPayments();
@@ -97,3 +110,19 @@ export const checkIfEntryExists = async (userId, month, year) => {
     return true;
   }
 };
+
+export const updateAllPayments = async () => {
+      const paymentsRef = paymentCollection;
+      const snapshot = await getDocs(paymentsRef);
+
+      const updates = snapshot.docs.map(async (document) => {
+        const docRef = doc(db, "payments", document.id);
+        await updateDoc(docRef, {
+          isNew: 0,
+          monthNumber: 0, // Or a default number like 0
+        });
+      });
+
+      await Promise.all(updates);
+      console.log("All documents updated.");
+    };

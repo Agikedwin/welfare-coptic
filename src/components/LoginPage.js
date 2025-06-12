@@ -23,11 +23,11 @@ function LoginPage() {
         console.log('The result ::: ', result.error)
         if(result.error){
            toast.warning('Invalid credentials. Please try again.' )
-
+           return
         }
 
       });
-      navigate('/'); // redirect after login
+      navigate('/home'); // redirect after login
     } catch (err) {
       //setError('Invalid credentials. Please try again.');
       console.log('LOGIN ERRRO')

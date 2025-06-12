@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
-    fetchPayments, fetchPaymentTotalsByType, updatePaymentStatus,
-    fetchOutstandingArrears
+    fetchPayments, fetchPaymentsPending, updatePaymentStatus,
 } from '../services/paymentService';
 import './styles/PaymentTable.css'; // Custom styles
 import { useParams } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap'; // Bootstrap modal
 import { getCurrentUser } from '../services/UserService';
 
-const PaymentTable = () => {
+const PendingVerification = () => {
     const [currentlyLogged, setUser] = useState(null);
     const [payments, setPayments] = useState([]);
     const [totals, setTotals] = useState({ Monthly: 0, Arrears: 0 });
@@ -41,7 +40,8 @@ const PaymentTable = () => {
     };
 
     useEffect(() => {
-        if (userId) {
+        console.log("AT the new table")
+
              const loadUserLogged = async () => {
                   try {
                     const currentUser = await getCurrentUser();
@@ -58,14 +58,12 @@ const PaymentTable = () => {
 
             const loadData = async () => {
                 try {
-                    const [paymentsData, totalData, arrearsData] = await Promise.all([
-                        fetchPayments(userId),
-                        fetchPaymentTotalsByType(userId),
-                        fetchOutstandingArrears(userId)
+                    const [paymentsData] = await Promise.all([
+                        fetchPaymentsPending(),
+                        
                     ]);
                     setPayments(paymentsData);
-                    setTotals(totalData);
-                    setArrears(arrearsData);
+                    
                 } catch (error) {
                     console.error('Error loading data:', error);
                 } finally {
@@ -74,12 +72,13 @@ const PaymentTable = () => {
             };
             loadUserLogged()
             loadData();
-        }
-    }, [userId]);
+            console.log(payments)
+        
+    }, []);
 
     return (
         <div className="payment-table-container container-fluid py-2">
-            <h3 className="table-title mb-1">📄 Payment History</h3>
+            <h3 className="table-title mb-1">📄 Payments Unverified</h3>
 
             {loading ? (
                 <div className="text-center text-muted fs-5">Loading payments...</div>
@@ -177,20 +176,7 @@ const PaymentTable = () => {
                         </table>
                     </div>
 
-                    <div className="totals-summary d-flex flex-wrap justify-content-center gap-4 py-3 rounded shadow-sm">
-                        <div className="total-box bg-danger text-dark px-4 py-2 rounded">
-                            <strong>Outstanding Arrears:</strong> Ksh {arrears - totals.Arrears}
-                        </div>
-                        <div className="total-box bg-warning text-dark px-4 py-2 rounded">
-                            <strong>Paid Arrears:</strong> Ksh {totals.Arrears}
-                        </div>
-                        <div className="total-box bg-primary text-white px-4 py-2 rounded">
-                            <strong>Monthly:</strong> Ksh {totals.Monthly}
-                        </div>
-                        <div className="total-box bg-success text-white px-4 py-2 rounded">
-                            <strong>Grand Total:</strong> Ksh {totals.Monthly + totals.Arrears}
-                        </div>
-                    </div>
+                   
                 </>
             )}
 
@@ -216,4 +202,4 @@ const PaymentTable = () => {
     );
 };
 
-export default PaymentTable;
+export default PendingVerification;

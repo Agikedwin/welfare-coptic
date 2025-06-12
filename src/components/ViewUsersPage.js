@@ -2,17 +2,37 @@
 import React, { useEffect, useState } from "react";
 import { Card, Table, Container, Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { getAllUsers, saveUserArrears } from '../services/UserService';
+import { getAllUsers, saveUserArrears,getCurrentUser } from '../services/UserService';
 
 function ViewUsersPage() {
   const navigate = useNavigate();
+  const [currentlyLogged, setUser] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [outstandingArrears, setOutstandingArrears] = useState('');
   const [status, setStatus] = useState('Pending');
+  const [searchTerm, setSearchTerm] = useState('');
+
 
   useEffect(() => {
+
+     const loadUser = async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
+          console.log('Logged in user:', currentUser);
+        } else {
+          console.warn('No user is logged in');
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+    loadUser();
+    
+    
     const fetchUsers = async () => {
       const users = await getAllUsers();
       setAllUsers(users);
@@ -51,8 +71,17 @@ function ViewUsersPage() {
   return (
     <Container fluid className="py-4" style={{ minHeight: '100vh' }}>
       <Card className="shadow-sm rounded-4">
-        <Card.Header className="bg-primary text-white fw-bold fs-4">
-          View Users
+        <Card.Header className="bg-primary text-white fw-bold fs-6">
+          
+          <div className="mb-1 d-flex justify-content-end">
+            <input
+              type="text"
+              className="form-control w-20"
+              placeholder="Search by name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+            />
+          </div>
         </Card.Header>
         <Card.Body>
           <Table responsive hover bordered className="align-middle mb-0">
@@ -67,7 +96,9 @@ function ViewUsersPage() {
               </tr>
             </thead>
             <tbody>
-              {allUsers.map((user, idx) => (
+              {allUsers.filter((user) =>
+                  user.full_name?.toLowerCase().includes(searchTerm)
+                ).map((user, idx) => (
                 <tr key={user.uid}>
                   <td>{idx + 1}</td>
                   <td>{user.full_name}</td>
@@ -78,15 +109,19 @@ function ViewUsersPage() {
                       {user.user_role}
                     </span>
                   </td>
+                  
                   <td className="text-center">
-                    <Button
+                    {(currentlyLogged.uid ==="30GeuuY6PcZJIKUCD94DhXWhSXs1") ?  (
+                     <>
+                      <Button
                       variant="outline-primary"
                       size="sm"
                       className="me-2"
                       onClick={() => openModal(user)}
                     >
                       Update
-                    </Button>
+                    </Button>     
+                    
                     <Button
                       variant="outline-success"
                       size="sm"
@@ -94,6 +129,21 @@ function ViewUsersPage() {
                     >
                       View
                     </Button>
+                     </>
+                      
+                  ):
+                  (
+                    <Button
+                      variant="outline-success"
+                      size="sm"
+                      onClick={() => handleViewClick(user.uid)}
+                    >
+                      View
+                    </Button>
+                  )
+                  }
+                    
+                    
                   </td>
                 </tr>
               ))}

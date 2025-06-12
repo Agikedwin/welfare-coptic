@@ -1,6 +1,6 @@
 // src/services/userService.js
 import {db} from '../firebase'
-import { signOut } from "firebase/auth";
+import { signOut ,onAuthStateChanged} from "firebase/auth";
 
 import {
   collection,
@@ -189,3 +189,19 @@ export const logout = async () => {
     console.error("Error signing out:", error);
   }
 };
+
+/**
+ * Gets the current logged-in Firebase user.
+ * @returns {Promise<firebase.User|null>}
+ */
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe(); // Prevent memory leaks
+      resolve(user || null);
+    }, reject);
+  });
+};
+  
+      

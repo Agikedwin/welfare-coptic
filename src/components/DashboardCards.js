@@ -4,6 +4,7 @@ import './styles/DashboardCards.css';
 
 const DashboardCards = ({ stats,totals }) => {
   const [openingBalance,setOpeningBalance] =useState(28700)
+  const [upfrontPayment,setUpfrontPayments] =useState(1200)
 
   useEffect(()=>{
     console.log('The data ----HHHHHHHH:: ', totals
@@ -12,15 +13,21 @@ const DashboardCards = ({ stats,totals }) => {
   },[])
   const cards = [ {
       title: 'Opening Balance(May 2025)',
-      value: `KSH ${openingBalance}`,
+      value: `KSH ${openingBalance} | T_ID:TF37C93YJZ`,
       icon: '🏦',
       color: 'bg-primary text-white',
+    },
+    {
+      title: 'Upfront Payments as of May 2025',
+      value: `KSH ${upfrontPayment}`,
+      icon: '💸',
+      color: 'bg-secondary text-white',
     },
     {
       title: 'Total Amount in Arrears',
       value: `KSH ${totals.user_arrears}`,
       icon: '🟡',
-      color: 'bg-warning text-white',
+      color: 'bg-warning text-black',
     },
     {
       title: 'Total Paid Arrears',
@@ -41,11 +48,12 @@ const DashboardCards = ({ stats,totals }) => {
       icon: '📉',
       color: 'bg-danger text-white',
     },
+    
 
     {
-      title: 'NET BALANCE',
-      value: `KSH ${openingBalance + totals.payments.Arrears + totals.payments.Monthly - totals.expenditures}`,
-      icon: '',
+      title: 'NET BALANCE', // less upfront payments
+      value: `KSH ${openingBalance + totals.payments.Arrears + totals.payments.Monthly - totals.expenditures- upfrontPayment}`,
+      icon: '💵',
       color: 'bg-teal text-black',
     },
    

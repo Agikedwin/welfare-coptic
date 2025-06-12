@@ -11,7 +11,7 @@ function NavbarComponent() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -22,7 +22,7 @@ function NavbarComponent() {
       <Container fluid>
         <Navbar.Brand as={Link} to="/" className="fw-bold d-flex align-items-center">
           <i className="bi bi-speedometer2 me-2 fs-4"></i>
-          Dashboard
+          Coptic WFMS
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">

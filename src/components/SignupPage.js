@@ -28,7 +28,7 @@ function SignupPage() {
       }
       await signUpCreateUserWithEmailAndPassword(email, password,fullName,phoneNumber,confirmPwd);
       toast.success('✅ Sign up successfull');
-      navigate('/login'); // redirect after signup
+      navigate('/'); // redirect after signup
     } catch (err) {
       toast.warning(err.message )
       setError(err.message);
@@ -104,7 +104,7 @@ function SignupPage() {
               Sign Up
             </Button>
 
-            <Button variant="outline-secondary" className="w-100" onClick={() => navigate('/login')}>
+            <Button variant="outline-secondary" className="w-100" onClick={() => navigate('/')}>
               Back to Login
             </Button>
           </Form>
