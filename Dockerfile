@@ -18,7 +18,7 @@ RUN npm install firebase
 COPY . .
  
 # Expose the port your app runs on
-EXPOSE 3000
+EXPOSE 4000
  
 # Define the command to run your app
 CMD ["npm", "start"]

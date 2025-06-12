@@ -5,7 +5,7 @@ services:
     image: edvinag73/coptic-welfare:latest
     mem_reservation: 700m
     ports:
-      - 4000:3000
+      - 4000:4000
     network_mode: "host"
     restart: unless-stopped
 
