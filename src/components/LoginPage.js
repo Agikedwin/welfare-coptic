@@ -25,9 +25,10 @@ function LoginPage() {
            toast.warning('Invalid credentials. Please try again.' )
            return
         }
+        navigate('/home'); // redirect after login
 
       });
-      navigate('/home'); // redirect after login
+      
     } catch (err) {
       //setError('Invalid credentials. Please try again.');
       console.log('LOGIN ERRRO')

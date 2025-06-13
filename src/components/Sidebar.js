@@ -84,7 +84,6 @@ function Sidebar() {
               {!collapsed && <span className="ms-1">Pay</span>}
             </Nav.Link>
           </Nav.Item>
-
            <Nav.Item>            
             <Nav.Link
               as={Link}
@@ -93,7 +92,7 @@ function Sidebar() {
               className={`px-1 py-2 ${location.pathname === '/payments-pending' ? 'active' : ''}`}
             >
               <i className="bi bi-bell"></i>
-              {!collapsed && <span className="ms-1">Unverified</span>}
+              {!collapsed && <span className="ms-1">Unverified </span>}
             </Nav.Link>
           </Nav.Item>
 
