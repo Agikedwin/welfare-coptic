@@ -11,8 +11,8 @@ function Sidebar() {
   // Detect mobile screen width
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
+      setIsMobile(window.innerWidth < 350);
+      if (window.innerWidth >= 350) {
         setShowOffcanvas(false); // close offcanvas if resizing up
       }
     };
@@ -47,37 +47,93 @@ function Sidebar() {
             <Offcanvas.Title>Menu</Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body className="p-0">
-            <Nav className="flex-column bg-light" style={{ minHeight: '100vh' }}>
-              <Nav.Link 
-                as={Link} 
-                to="/add-user" 
-                active={location.pathname === '/add-user'}
-                onClick={() => setShowOffcanvas(false)}
-                className="px-3 py-2"
-              >
-                <i className="bi bi-person-plus me-2"></i>Add User
-              </Nav.Link>
-              <Nav.Link 
-                as={Link} 
-                to="/view-users" 
-                active={location.pathname === '/view-users'}
-                onClick={() => setShowOffcanvas(false)}
-                className="px-3 py-2"
-              >
-                <i className="bi bi-people me-2"></i>View Users
-              </Nav.Link>
-              <Nav.Link 
-                as={Link} 
-                to="/payments" 
-                active={location.pathname === '/payments'}
-                onClick={() => setShowOffcanvas(false)}
-                className="px-3 py-2"
-              >
-                <i className="bi bi-people me-2"></i>Payment
-              </Nav.Link>
+            <Nav className="flex-column mt-4">
+          <Nav.Item>
+            <Nav.Link
+                as={Link}
+                to="/home"
+                 onClick={() => setShowOffcanvas(false)}
+                className={`px-1 py-2 ${location.pathname === '/add-user' ? 'active' : ''}`}
+                >
+               <i className="bi bi-house"></i>
+                {!collapsed && <span className="ms-1">Home</span>}
+                </Nav.Link>
 
-              
-            </Nav>
+          </Nav.Item>
+          <Nav.Item>
+            
+            <Nav.Link
+              as={Link}
+              to="/view-users"
+               onClick={() => setShowOffcanvas(false)}
+              className={`px-1 py-2 ${location.pathname === '/view-users' ? 'active' : ''}`}
+            >
+              <i className="bi bi-people"></i>
+              {!collapsed && <span className="ms-1">Members</span>}
+            </Nav.Link>
+          </Nav.Item>
+
+          <Nav.Item>            
+            <Nav.Link
+              as={Link}
+              to="/payment"
+               onClick={() => setShowOffcanvas(false)}
+              className={`px-1 py-2 ${location.pathname === '/payment' ? 'active' : ''}`}
+            >
+              <i className="bi bi-credit-card"></i>
+              {!collapsed && <span className="ms-1">Pay</span>}
+            </Nav.Link>
+          </Nav.Item>
+
+           <Nav.Item>            
+            <Nav.Link
+              as={Link}
+              to="/payments-pending"
+               onClick={() => setShowOffcanvas(false)}
+              className={`px-1 py-2 ${location.pathname === '/payments-pending' ? 'active' : ''}`}
+            >
+              <i className="bi bi-bell"></i>
+              {!collapsed && <span className="ms-1">Unverified</span>}
+            </Nav.Link>
+          </Nav.Item>
+
+           <Nav.Item>            
+            <Nav.Link
+              as={Link}
+              to="/expenses"
+               onClick={() => setShowOffcanvas(false)}
+              className={`px-1 py-2 ${location.pathname === '/expenses' ? 'active' : ''}`}
+            >
+              <i className="bi bi-plus"></i>
+              {!collapsed && <span className="ms-1">Add Expense</span>}
+            </Nav.Link>
+          </Nav.Item>
+
+           <Nav.Item>            
+            <Nav.Link
+              as={Link}
+              to="/expenses-view"
+               onClick={() => setShowOffcanvas(false)}
+              className={`px-1 py-2 ${location.pathname === '/expenses-view' ? 'active' : ''}`}
+            >
+              <i className="bi bi-receipt"></i>
+              {!collapsed && <span className="ms-1">Expenses View</span>}
+            </Nav.Link>
+          </Nav.Item>
+
+          
+
+           {/* <Nav.Item>            
+            <Nav.Link
+              as={Link}
+              to="/payment-history/:userId"
+              className={`px-1 py-2 ${location.pathname === '/payment-history/:userId' ? 'active' : ''}`}
+            >
+              <i className="bi bi-people"></i>
+              {!collapsed && <span className="ms-1">Payment History</span>}
+            </Nav.Link>
+          </Nav.Item> */}
+        </Nav>
           </Offcanvas.Body>
         </Offcanvas>
       </>
