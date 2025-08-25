@@ -87,10 +87,10 @@ const PaymentForm = () => {
    
     try {
       const [dataExists] = await Promise.all([
-                              checkIfEntryExists(formData.user_id,formData.month, formData.year)
+                              checkIfEntryExists(formData.user_id,formData.month, formData.year, formData.paymentType)
                           ]);
                           
-      console.log("PAYMENT STATE :::",dataExists )
+      console.log("PAYMENT STATE HERE :::",dataExists )
 
       if(dataExists){
         toast.warning(`You have already paid your monthly contribution for  ${formData.month} ${formData.year}. Thank you   ` )
@@ -101,7 +101,7 @@ const PaymentForm = () => {
       toast.success('✅ Payment saved successfully!');
       setFormData({
         user_id: formData.user_id,
-        paymentType: 'Monthly',
+        paymentType: '',
         month: months[0],
         year: new Date().getFullYear(),
         amount: 0,
@@ -184,14 +184,14 @@ const PaymentForm = () => {
         )} */}
 
         <label>
-          Amount (Max 200):
+          Amount (Min 50):
           <input
             type="number"
             name="amount"
             value={formData.amount}
             onChange={handleChange}
             required
-            max="200"
+            //max="200"
             min="50"
             
           />

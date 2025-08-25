@@ -71,7 +71,6 @@ export const updatePaymentStatus = async (paymentId, newStatus) => {
   });
 };
 
-
 export const fetchOutstandingArrears = async (userId) => {
   try {
     const q = query(
@@ -81,9 +80,16 @@ export const fetchOutstandingArrears = async (userId) => {
     const snapshot = await getDocs(q);
 
     if (!snapshot.empty) {
-      const data = snapshot.docs[0].data();
-      console.log(`Outstanding Arrears for user ${userId}:`, data.outstanding_arrears);
-      return data.outstanding_arrears || 0;
+      let outstanding_arrears = 0;
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const arrears = parseFloat(data.outstanding_arrears) || 0;
+        outstanding_arrears += arrears;
+      });
+
+      console.log(`Total Outstanding Arrears for user ${userId}:`, outstanding_arrears);
+      return outstanding_arrears;
     } else {
       console.warn(`No arrears found for userId: ${userId}`);
       return 0;
@@ -94,11 +100,13 @@ export const fetchOutstandingArrears = async (userId) => {
   }
 };
 
-export const checkIfEntryExists = async (userId, month, year) => {
+
+export const checkIfEntryExists = async (userId, month, year,paymentType) => {
   const q = query(paymentCollection, // Replace with your collection name
     where("user_id", "==", userId),
     where("month", "==", month),
-    where("year", "==", year)
+    where("year", "==", year),
+   // where("paymentType", "==", paymentType),
   );
 
   try {
