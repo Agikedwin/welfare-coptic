@@ -134,3 +134,19 @@ export const updateAllPayments = async () => {
       await Promise.all(updates);
       console.log("All documents updated.");
     };
+
+
+ export const fetchArrearsPayments = async (userId) => {
+  let q = paymentCollection;
+
+  if (userId) {
+    q = query(paymentCollection, 
+      where('user_id', '==', userId),
+      where('paymentType', '==', 'Arrears'),
+      where('status', '==', 'Verified')
+  )
+  };
+
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};

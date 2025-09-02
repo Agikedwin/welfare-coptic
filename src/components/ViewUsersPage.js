@@ -2,22 +2,34 @@
 import React, { useEffect, useState } from "react";
 import { Card, Table, Container, Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { getAllUsers, saveUserArrears,getCurrentUser } from '../services/UserService';
+import { getAllUsers, saveUserArrears, getCurrentUser } from '../services/UserService';
+import { wait } from "@testing-library/user-event/dist/utils";
+import { fetchOutstandingArrears, fetchArrearsPayments} from '../services/paymentService';
+
 
 function ViewUsersPage() {
   const navigate = useNavigate();
   const [currentlyLogged, setUser] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showModalArreas, setShowModalArreas] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [outstandingArrears, setOutstandingArrears] = useState('');
   const [status, setStatus] = useState('Pending');
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [pendingArrears, setPendingArrears] = useState(0)
+  const [pendingArrearsAmount, setPendingArrearsAmount] = useState([])
+  const [isLoading, setIsLoading] = useState(true);
+  const [paidArrears, setPaidArrears] = useState(0)
+
+
+  
+
 
   useEffect(() => {
 
-     const loadUser = async () => {
+    const loadUser = async () => {
       try {
         const currentUser = await getCurrentUser();
         if (currentUser) {
@@ -31,14 +43,66 @@ function ViewUsersPage() {
       }
     };
     loadUser();
-    
-    
+
+
     const fetchUsers = async () => {
       const users = await getAllUsers();
       setAllUsers(users);
     };
     fetchUsers();
   }, []);
+
+
+  const getTotalArreas = async (userId)  =>{
+    
+   try {
+     const arrears = await fetchOutstandingArrears(userId);
+
+     setPendingArrears(arrears);
+     setShowModalArreas(true);
+
+     getTotalArreasAmount(userId);
+    
+   } catch (error) {
+    console.log(error)
+    
+   }
+
+  };
+
+    const getTotalArreasAmount = async (userId)  =>{
+   try {
+     const arrearsAmount = await fetchArrearsPayments(userId);
+
+     
+     
+     
+       let  totalPaid = 0
+      
+      arrearsAmount.forEach((data) => {
+      const amount = Number(data.amount); // Ensure it's a number
+      totalPaid += amount; 
+      setPaidArrears(totalPaid) 
+      
+      setPendingArrearsAmount(arrearsAmount);
+      setIsLoading(false);
+       
+      
+
+     })
+
+     
+
+     
+     
+
+    
+   } catch (error) {
+    console.log(error)
+    
+   }
+
+  };
 
   const openModal = (user) => {
     setSelectedUser(user);
@@ -51,6 +115,25 @@ function ViewUsersPage() {
     setShowModal(false);
     setSelectedUser(null);
   };
+
+
+  const openModalArreas = (userId) => {
+    setSelectedUser(userId);
+    setOutstandingArrears('');
+    setStatus('Pending');
+    getTotalArreas(userId);
+    
+   
+  };
+
+  const handleCloseModalArrears = () => {
+    setShowModalArreas(false);
+    setSelectedUser(null);
+     setPendingArrearsAmount([]);
+     setPaidArrears(0) 
+  };
+
+  
 
   const handleSaveArrears = async () => {
     if (!selectedUser) return;
@@ -72,7 +155,7 @@ function ViewUsersPage() {
     <Container fluid className="py-4" style={{ minHeight: '100vh' }}>
       <Card className="shadow-sm rounded-4">
         <Card.Header className="bg-primary text-white fw-bold fs-6">
-          
+
           <div className="mb-1 d-flex justify-content-end">
             <input
               type="text"
@@ -97,8 +180,8 @@ function ViewUsersPage() {
             </thead>
             <tbody>
               {allUsers.filter((user) =>
-                  user.full_name?.toLowerCase().includes(searchTerm)
-                ).map((user, idx) => (
+                user.full_name?.toLowerCase().includes(searchTerm)
+              ).map((user, idx) => (
                 <tr key={user.uid}>
                   <td>{idx + 1}</td>
                   <td>{user.full_name}</td>
@@ -109,41 +192,69 @@ function ViewUsersPage() {
                       {user.user_role}
                     </span>
                   </td>
-                  
+
                   <td className="text-center">
-                    {(currentlyLogged.uid ==="30GeuuY6PcZJIKUCD94DhXWhSXs1") ?  (
-                     <>
-                      <Button
-                      variant="outline-primary"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => openModal(user)}
-                    >
-                      Update
-                    </Button>     
-                    
-                    <Button
-                      variant="outline-success"
-                      size="sm"
-                      onClick={() => handleViewClick(user.uid)}
-                    >
-                      View
-                    </Button>
-                     </>
-                      
-                  ):
-                  (
-                    <Button
-                      variant="outline-success"
-                      size="sm"
-                      onClick={() => handleViewClick(user.uid)}
-                    >
-                      View
-                    </Button>
-                  )
-                  }
-                    
-                    
+                    {(currentlyLogged.uid === "30GeuuY6PcZJIKUCD94DhXWhSXs1") ? (
+                      <>
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          className="me-2"
+                          onClick={() => openModal(user)}
+                        >
+                          Update
+                        </Button>
+
+                        <Button
+                          variant="outline-success"
+                          size="sm"
+                          className="me-2"
+                          onClick={() => handleViewClick(user.uid)}
+                        >
+                          View
+                        </Button>
+
+                        <Button
+                            variant="outline-success"
+                            size="sm"
+                            className="me-2"
+                            onClick={() => openModalArreas(user.uid)}
+                          >
+                            Arreas
+                          </Button>
+                      </>
+
+                    ) :
+                      (
+                        <>
+                          <Button
+                            variant="outline-success"
+                            size="sm"
+                             className="me-2"
+                            
+                            onClick={() => handleViewClick(user.uid)}
+                          >
+                            View
+                          </Button>
+
+                          <Button
+                            variant="outline-success"
+                            size="sm"
+                             className="me-2"
+                            onClick={() => openModalArreas(user.uid)}
+                          >
+                            Arreas
+                          </Button>
+                        </>
+
+
+
+
+
+                      )
+                    }
+
+
                   </td>
                 </tr>
               ))}
@@ -189,6 +300,72 @@ function ViewUsersPage() {
           <Button variant="success" onClick={handleSaveArrears}>Save</Button>
         </Modal.Footer>
       </Modal>
+
+
+      <Modal show={showModalArreas} onHide={handleCloseModalArrears}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <p className="card-text text-primary  fs-8"> Arrears Ksh
+               <span className="text-danger fw-bold">  {  pendingArrears } </span>
+               <span>as of May 2025</span>
+            </p>
+          </Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          {/* Card with Total Pending Arrears */}
+         
+
+          {/* Payments Breakdown List */}
+          <h6>Arrears Payment History</h6>
+          
+          <ul className="list-group mb-3">
+
+            
+
+            { isLoading ? ' Loading .. ':
+             pendingArrearsAmount.map((data, idx) =>{
+              const rawDate = data.createdAt?.toDate?.(); // convert Firestore Timestamp to JS Date
+                            const formattedDate = rawDate
+                                ? rawDate.toLocaleString('en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    
+
+                                })
+                                : '-';  
+              
+
+             return (
+               <li key={idx +1} className="list-group-item d-flex justify-content-between align-items-center">
+              <span>Ksh {data['amount']}</span>
+              <span> {data['paymentType']}</span>
+              <small className="text-muted">{formattedDate}</small>
+              </li>
+
+             );
+              
+})
+          }           
+           
+          </ul>
+
+          {/* Balance Section */}
+          <div className="text-end">
+            <h4 className="fw-bold text-primary"><span className="text-black">Paid :</span>{paidArrears}</h4>
+          </div>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModalArrears}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+
+
     </Container>
   );
 }

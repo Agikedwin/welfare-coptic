@@ -20,25 +20,25 @@ const DashboardCards = ({ stats,totals }) => {
     {
       title: 'Upfront Payments as of May 2025',
       value: `KSH ${upfrontPayment}`,
-      icon: '💸',
+      icon: '',
       color: 'bg-secondary text-white',
     },
     {
       title: 'Total Amount in Arrears',
       value: `KSH ${totals.user_arrears}`,
-      icon: '🟡',
+      icon: '',
       color: 'bg-warning text-black',
     },
     {
       title: 'Total Paid Arrears',
       value: `KSH ${totals.payments.Arrears}`,
-      icon: '💰',
+      icon: '',
       color: 'bg-info text-white',
     },
     {
       title: 'Total Monthly Contribution',
       value: `KSH ${totals.payments.Monthly}`,
-      icon: '🟢',
+      icon: '',
       color: 'bg-success text-white',
     },
     
@@ -53,7 +53,7 @@ const DashboardCards = ({ stats,totals }) => {
     {
       title: 'NET BALANCE', // less upfront payments
       value: `KSH ${openingBalance + totals.payments.Arrears + totals.payments.Monthly - totals.expenditures- upfrontPayment}`,
-      icon: '💵',
+      icon: '',
       color: 'bg-teal text-black',
     },
    
